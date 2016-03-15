@@ -29,7 +29,12 @@
                   sock = null;
                }
                sock.onmessage = function(e) {
-                  log("Got echo: " + e.data);
+                  log("Got data: " + e.data);
+                  if (e.data.indexOf('url') === 0) {
+                     window.open(e.data.substr(4));
+                  } else if (e.data.indexOf('yourTurn') === 0) {
+                     // Invoke method to do ultrasound authentication
+                  }
                }
             }
          };
