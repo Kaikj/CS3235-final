@@ -1,4 +1,6 @@
 import math
+import us_sender 
+import us_receiver
 
 sharedG = int(raw_input('Shared G value: '))
 sharedP = int(raw_input('Shared P value: '))
