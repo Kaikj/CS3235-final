@@ -8,7 +8,10 @@ A web socket server and client test for [CRASH][crash]
 
 1. `onConnect`: store handler to the client in a list
 2. `onOpen` from 127.0.0.1: start authenticating clients in the list via [CRASH][crash] protocol
+    * Sends "yourTurn" message to the client
+    * Invoke the [CRASH][crash] UltraSound authentication protocol with that client
 3. `onAuthSuccess`: send the url of the page to be opened
+    * Message is in the form "url:xxx"
 
 ### Client
 
