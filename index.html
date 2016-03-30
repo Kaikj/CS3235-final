@@ -22,6 +22,7 @@
             }
             if (sock) {
                sock.onopen = function() {
+                  log(new Date());
                   log("Connected to " + wsuri);
                }
                sock.onclose = function(e) {
@@ -29,6 +30,7 @@
                   sock = null;
                }
                sock.onmessage = function(e) {
+                  log(new Date());
                   log("Got data: " + e.data);
                   if (e.data.indexOf('url') === 0) {
                      window.open(e.data.substr(4));
