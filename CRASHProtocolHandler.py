@@ -6,23 +6,20 @@ from twisted.internet import reactor, defer, threads
 class CrashProtocolHandler:
     promiseQueue = deque([])
     CRASHLock = Lock()
-    running = False
 
     @classmethod
     def initAuth(self):
         turnPromise = defer.Deferred()
         self.promiseQueue.append(turnPromise)
-        if not self.running:
-            Thread(target=self.run).start()
+        Thread(target=self.waitForTurn).start()
         return turnPromise
 
     @classmethod
-    def run(self):
-        self.running = True
-        while len(self.promiseQueue) > 0:
-            with self.CRASHLock:
-                self.promiseQueue.popleft().callback(None) # tell client its his/her turn
-        self.running = False
+    def waitForTurn(self):
+        # block other clients who try to authenticate
+        self.CRASHLock.acquire()
+        # tell client its his/her turn
+        self.promiseQueue.popleft().callback(None)
 
     @classmethod
     def startAuth(self):
@@ -34,4 +31,6 @@ class CrashProtocolHandler:
     def CRASHAuth(self, promise):
         # Invoke CRASH protocol here
         time.sleep(2)
+        # release lock to allow other client to authenticate
+        self.CRASHLock.release()
         promise.callback(True)
