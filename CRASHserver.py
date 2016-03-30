@@ -1,4 +1,5 @@
 import sys
+import threading
 
 from twisted.internet import reactor
 from twisted.python import log
@@ -10,29 +11,29 @@ from autobahn.twisted.websocket import WebSocketServerFactory, \
 
 from autobahn.twisted.resource import WebSocketResource
 
+from CRASHProtocolHandler import CrashProtocolHandler
 
 class CRASHServerProtocol(WebSocketServerProtocol):
-    listOfInstances = []
-
-    def onConnect(self, request):
-        self.listOfInstances.append(self)
-
     def onOpen(self):
         print(self.peer)
-        protocol, ip, port = self.peer.split(':')
-        if ip == '127.0.0.1':
-            print('Authenticating...')
-            self.startAuthenticate()
+        # protocol, ip, port = self.peer.split(':')
+        print('Authenticating...')
+        threading.Thread(target=self.initAuthenticate).start()
 
-    def startAuthenticate(self):
-        for instance in self.listOfInstances:
-            instance.sendMessage('yourTurn', False)
-            # Invoke the ultrasound authentication here
+    def initAuthenticate(self):
+        turn_promise = CrashProtocolHandler.initAuth()
+        turn_promise.addCallback(self.startAuthenticate)
 
-    def onAuthSuccess(self, peer):
-        for instance in self.listOfInstances:
-            if instance is peer:
-                instance.sendMessage('url:http://www.google.com', False)
+    def startAuthenticate(self, result):
+        self.sendMessage('yourTurn', False)
+        # wait to receive back from client
+        auth_promise = CrashProtocolHandler.startAuth()
+        auth_promise.addCallback(self.onAuthSuccess)
+
+    def onAuthSuccess(self, success):
+        print('Authentication successful')
+        if success:
+            self.sendMessage('url:http://www.google.com', False)
 
     def onMessage(self, payload, isBinary):
         self.sendMessage(payload, isBinary)
@@ -40,7 +41,7 @@ class CRASHServerProtocol(WebSocketServerProtocol):
             self.onAuthSuccess(self)
 
     def onClose(self, wasClean, code, reason):
-        self.listOfInstances.remove(self)
+        print(reason)
 
 
 if __name__ == '__main__':
