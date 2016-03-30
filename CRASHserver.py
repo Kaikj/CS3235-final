@@ -17,8 +17,7 @@ class CRASHServerProtocol(WebSocketServerProtocol):
     def onOpen(self):
         print(self.peer)
         # protocol, ip, port = self.peer.split(':')
-        print('Authenticating...')
-        threading.Thread(target=self.initAuthenticate).start()
+        self.initAuthenticate()
 
     def initAuthenticate(self):
         turn_promise = CrashProtocolHandler.initAuth()
@@ -26,6 +25,7 @@ class CRASHServerProtocol(WebSocketServerProtocol):
 
     def startAuthenticate(self, result):
         self.sendMessage('yourTurn', False)
+        print('Authenticating...')
         # wait to receive back from client
         auth_promise = CrashProtocolHandler.startAuth()
         auth_promise.addCallback(self.onAuthSuccess)
