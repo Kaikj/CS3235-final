@@ -3,7 +3,7 @@ from threading import Lock, Thread
 from collections import deque
 from twisted.internet import reactor, defer, threads
 
-class CrashProtocolHandler:
+class ClientHandler:
     promiseQueue = deque([])
     CRASHLock = Lock()
 
@@ -34,3 +34,9 @@ class CrashProtocolHandler:
         # release lock to allow other client to authenticate
         self.CRASHLock.release()
         promise.callback(True)
+
+
+class VipHandler:
+    @classmethod
+    def sendNumbers(self):
+        pass
