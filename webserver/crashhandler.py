@@ -4,7 +4,7 @@ from collections import deque
 
 from twisted.internet import reactor, defer, threads
 
-from ..DH_Key_Exchange import DH
+from DH_Key_Exchange import DH
 
 class ClientHandler:
     clientQueue = deque([])
