@@ -4,37 +4,38 @@ from collections import deque
 from twisted.internet import reactor, defer, threads
 
 class ClientHandler:
-    promiseQueue = deque([])
+    clientQueue = deque([])
     CRASHLock = Lock()
 
     @classmethod
-    def initAuth(self):
-        turnPromise = defer.Deferred()
-        self.promiseQueue.append(turnPromise)
+    def initAuth(self, client):
+        self.clientQueue.append(client)
         Thread(target=self.waitForTurn).start()
-        return turnPromise
 
     @classmethod
     def waitForTurn(self):
         # block other clients who try to authenticate
         self.CRASHLock.acquire()
         # tell client its his/her turn
-        self.promiseQueue.popleft().callback(None)
+        self.clientQueue.popleft().sendMessage('yourTurn', False)
+        # wait to receive back from client
 
     @classmethod
-    def startAuth(self):
-        authPromise = defer.Deferred()
-        Thread(target=self.CRASHAuth, kwargs={ 'promise': authPromise }).start()
-        return authPromise
+    def startAuth(self, client):
+        print('Authenticating...')
+        keyPromise = VipHandler.CRASHAuth()
+        keyPromise.addCallback(self.gotKey, client=client)
 
     @classmethod
-    def CRASHAuth(self, promise):
-        # Invoke CRASH protocol here
-        time.sleep(2)
+    def gotKey(self, result, client):
+        '''
+        result is the key
+        '''
         # release lock to allow other client to authenticate
         self.CRASHLock.release()
-        promise.callback(True)
-
+        # TODO: handle exceptional case
+        print('Authentication successful')
+        client.sendMessage('url:http://www.google.com', False)
 
 class VipHandler:
     @classmethod
