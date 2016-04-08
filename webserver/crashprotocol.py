@@ -23,4 +23,19 @@ class VipProtocol(WebSocketServerProtocol):
     def onOpen(self):
         print('VIP connects.')
         print(self.peer)
-        VipHandler.sendNumbers()
+        success = VipHandler.subscribe(self)
+        if not success:
+            self.dropConnection()
+
+    def onMessage(self, payload, isBinary):
+        if not isBinary:
+            str_payload = str(payload)
+            try:
+                key = int(str_payload)
+                VipHandler.onAuthSuccess(key)
+            except ValueError, e:
+                raise e
+
+    def onClose(self, wasClean, code, reason):
+        VipHandler.unsubscribe(self)
+        print(reason)
