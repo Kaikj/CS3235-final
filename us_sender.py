@@ -1,72 +1,72 @@
 import pyaudio
 import math
 import time
-import struct
 from constants import *
 
-total_frames = SAMPLE_RATE * NUMBER_OF_SECONDS
-current_frames = 0
-prev_index = 0
-text = "hello"
-print(' '.join(format(ord(x), 'b') for x in text))
+class UsSender:
+	def __init__(self):
+		prev_index = 0
 
-pya = pyaudio.PyAudio()
-stream = pya.open(
-	format=pya.get_format_from_width(WIDTH),
-	rate=SAMPLE_RATE,
-	channels=CHANNELS,
-	output=True)
+	def setup(self):
+		pya = pyaudio.PyAudio()
+		stream = pya.open(
+			format=pya.get_format_from_width(WIDTH),
+			rate=SAMPLE_RATE,
+			channels=CHANNELS,
+			output=True)
 
-def get_frame(frequency, index, rate=SAMPLE_RATE, amplitude=MAX_AMPLITUDE):
-	"""
-	Calculates the frame value at the given frequency and index
+	def teardown(self):
+		stream.close()
+		pya.terminate
 
-	:param frequency: The given frequency at which the frame is
-		to be calculated
-	:param index: The index of the frame that is to be calculated
-	:param rate: The sampling rate
-	"""
-	time = index / float(rate)
+	def pya_format(self, arr):
+		return ''.join(arr)
 
-	# y(t) = A * sin(2 * (pi) * f * t)
-	y = amplitude * math.sin(2 * math.pi * frequency * time)
-	return chr(int(y + TRANSFORMATION))
+	def send(self, bits):
+		stream.start_stream()
 
-def get_symbol(frequency, num_samples=SAMPLES_PER_SYMBOL, rate=SAMPLE_RATE, amplitude=MAX_AMPLITUDE):
-	global prev_index
-	symbol = []
-	final_index = num_samples + prev_index
-	for index in xrange(prev_index, final_index):
-		symbol.append(get_frame(frequency, index, rate, amplitude))
-	prev_index = (final_index % SAMPLE_RATE)
-	return symbol
+		# Repeat the sending so that the receiver has more chance
+		# of receiving the sound that is sent
+		for i in xrange(3):
 
-def play(buffer):
-	stream.write(buffer)
+			# Pad the start of the payload with 0s so that the
+			# receiver knows when the payload starts
+			for i in xrange(SIZE_OF_START * BITS_PER_ASCII):
+				stream.write(self.pya_format(get_symbol(ZERO_FREQUENCY)))
 
-def callback(in_data, frame_count, time_info, status):
-	print(in_data)
-	return (in_data, pyaudio.paContinue)
-
-stream.start_stream()
-
-# while stream.is_active():
-# time.sleep(2)
-
-# for x in xrange(SYMBOL_RATE * NUMBER_OF_SECONDS):
-for x in xrange(SYMBOL_RATE):
-	for x in xrange(3):
-		data = get_symbol(ONE_FREQUENCY)
-		# print(data)
-		stream.write(''.join(data))
-		# stream.write(''.join([struct.pack('h', ord(d)) for d in data]))
-		# print(get_frame(ONE_FREQUENCY, x))
-		# stream.write(get_frame(ONE_FREQUENCY, x))
-
-# stream.write("https://google.com")
-
-stream.stop_stream()
-stream.close()
-pya.terminate()
+			for bit in bits:
+				if bit == '1':
+					stream.write(self.pya_format(get_symbol(ONE_FREQUENCY)))
+				elif bit == '0':
+					stream.write(self.pya_format(get_symbol(ZERO_FREQUENCY)))
 
 
+		stream.stop_stream()
+
+	def get_symbol(frequency, num_samples=SAMPLES_PER_SYMBOL, rate=SAMPLE_RATE, amplitude=MAX_AMPLITUDE):
+		symbol = []
+		final_index = num_samples + prev_index
+		for index in xrange(prev_index, final_index):
+			symbol.append(get_frame(frequency, index, rate, amplitude))
+		prev_index = (final_index % SAMPLE_RATE)
+		return symbol
+
+	def get_frame(frequency, index, rate=SAMPLE_RATE, amplitude=MAX_AMPLITUDE):
+		"""
+		Calculates the frame value at the given frequency and index
+
+		:param frequency: The given frequency at which the frame is
+			to be calculated
+		:param index: The index of the frame that is to be calculated
+		:param rate: The sampling rate
+		"""
+		time = index / float(rate)
+
+		# y(t) = A * sin(2 * (pi) * f * t)
+		y = amplitude * math.sin(2 * math.pi * frequency * time)
+		return chr(int(y + TRANSFORMATION))
+
+
+sender = UsSender()
+sender.setup()
+sender.teardown()
