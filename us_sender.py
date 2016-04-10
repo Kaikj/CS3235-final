@@ -5,25 +5,23 @@ from constants import *
 
 class UsSender:
 	def __init__(self):
-		prev_index = 0
-
-	def setup(self):
-		pya = pyaudio.PyAudio()
-		stream = pya.open(
-			format=pya.get_format_from_width(WIDTH),
+		self.prev_index = 0
+		self.pya = pyaudio.PyAudio()
+		self.stream = self.pya.open(
+			format=self.pya.get_format_from_width(WIDTH),
 			rate=SAMPLE_RATE,
 			channels=CHANNELS,
 			output=True)
 
 	def teardown(self):
-		stream.close()
-		pya.terminate
+		self.stream.close()
+		self.pya.terminate()
 
 	def pya_format(self, arr):
 		return ''.join(arr)
 
 	def send(self, bits):
-		stream.start_stream()
+		self.stream.start_stream()
 
 		# Repeat the sending so that the receiver has more chance
 		# of receiving the sound that is sent
@@ -32,26 +30,26 @@ class UsSender:
 			# Pad the start of the payload with 0s so that the
 			# receiver knows when the payload starts
 			for i in xrange(SIZE_OF_START * BITS_PER_ASCII):
-				stream.write(self.pya_format(get_symbol(ZERO_FREQUENCY)))
+				self.stream.write(self.pya_format(self.get_symbol(ZERO_FREQUENCY)))
 
 			for bit in bits:
 				if bit == '1':
-					stream.write(self.pya_format(get_symbol(ONE_FREQUENCY)))
+					self.stream.write(self.pya_format(self.get_symbol(ONE_FREQUENCY)))
 				elif bit == '0':
-					stream.write(self.pya_format(get_symbol(ZERO_FREQUENCY)))
+					self.stream.write(self.pya_format(self.get_symbol(ZERO_FREQUENCY)))
 
 
-		stream.stop_stream()
+		self.stream.stop_stream()
 
-	def get_symbol(frequency, num_samples=SAMPLES_PER_SYMBOL, rate=SAMPLE_RATE, amplitude=MAX_AMPLITUDE):
+	def get_symbol(self, frequency, num_samples=SAMPLES_PER_SYMBOL, rate=SAMPLE_RATE, amplitude=MAX_AMPLITUDE):
 		symbol = []
-		final_index = num_samples + prev_index
-		for index in xrange(prev_index, final_index):
-			symbol.append(get_frame(frequency, index, rate, amplitude))
+		final_index = num_samples + self.prev_index
+		for index in xrange(self.prev_index, final_index):
+			symbol.append(self.get_frame(frequency, index, rate, amplitude))
 		prev_index = (final_index % SAMPLE_RATE)
 		return symbol
 
-	def get_frame(frequency, index, rate=SAMPLE_RATE, amplitude=MAX_AMPLITUDE):
+	def get_frame(self, frequency, index, rate=SAMPLE_RATE, amplitude=MAX_AMPLITUDE):
 		"""
 		Calculates the frame value at the given frequency and index
 
@@ -68,5 +66,5 @@ class UsSender:
 
 
 sender = UsSender()
-sender.setup()
+sender.send(''.join(format(ord(x), 'b') for x in "Hello"))
 sender.teardown()
