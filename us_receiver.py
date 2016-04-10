@@ -119,17 +119,24 @@ class UsReceiver:
 		frames to form a window before passing it along for further processing.
 		"""
 		while not self.event.is_set():
-			while not self.frame_queue.empty():
-				window = []
+			window = []
 
-				# Filling up the window till we get 1 symbol length
-				while len(window) < SAMPLES_PER_SYMBOL:
+			# Filling up the window till we get 1 symbol length or give
+			# up since there isn't going to be any more
+			attempt = 0
+			while len(window) < SAMPLES_PER_SYMBOL:
+				if self.frame_queue.empty():
+					attempt += 1
+					time.sleep(1)
+				else:
+					attempt = 0
 					window.append(self.frame_queue.get())
 
-				self.window_queue.put(window)
+				if attempt > 3:
+					break
 
-			# Sleep for a while to wait for more input
-			time.sleep(1)
+			# Make do with what we have
+			self.window_queue.put(window)
 
 	def process_window_queue(self):
 		"""
