@@ -155,14 +155,14 @@ class UsReceiver:
 			# Sleep until the input arrives
 			time.sleep(1)
 
-
-receiver = UsReceiver()
-try:
-	while True:
-		bits = receiver.get_bits()
-		print bits
-except KeyboardInterrupt:
-	print "Shutting down..."
-	receiver.teardown()
+if __name__ == "__main__":
+	receiver = UsReceiver()
+	try:
+		while True:
+			bits = receiver.get_bits()
+			print bits
+	except KeyboardInterrupt:
+		print "Shutting down..."
+		receiver.teardown()
 
 

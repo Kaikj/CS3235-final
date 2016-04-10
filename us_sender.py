@@ -87,7 +87,7 @@ class UsSender:
 		y = amplitude * math.sin(2 * math.pi * frequency * time)
 		return chr(int(y + TRANSFORMATION))
 
-
-sender = UsSender()
-sender.send(''.join(format(ord(x), 'b') for x in "Hello"))
-sender.teardown()
+if  __name__ == "__main__":
+	sender = UsSender()
+	sender.send(''.join(format(ord(x), 'b') for x in "Hello"))
+	sender.teardown()
