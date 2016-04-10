@@ -4,6 +4,13 @@ import time
 from constants import *
 
 class UsSender:
+	"""
+	This class handles the ultrasonic transmission of data. Using a network
+	analogy, it can be thought of as the physical layer. It's only responsibility
+	includes sending the bits given to it as the relevant sound waves. Since
+	frequency modulation is being used, the frequency of the sound produced is
+	then dependent on the bit that is passed in
+	"""
 	def __init__(self):
 		self.prev_index = 0
 		self.pya = pyaudio.PyAudio()
@@ -14,13 +21,25 @@ class UsSender:
 			output=True)
 
 	def teardown(self):
+		"""
+		Stops processes and threads to allow application
+		to shutdown gracefully
+		"""
 		self.stream.close()
 		self.pya.terminate()
 
 	def pya_format(self, arr):
+		"""
+		Converts the array that defines the amplitude of the sound
+		at a particular point into string, which pya prefers
+		"""
 		return ''.join(arr)
 
 	def send(self, bits):
+		"""
+		Converts the bits given into the relevant frequencies and send
+		them out as sound waves
+		"""
 		self.stream.start_stream()
 
 		# Repeat the sending so that the receiver has more chance
@@ -42,6 +61,10 @@ class UsSender:
 		self.stream.stop_stream()
 
 	def get_symbol(self, frequency, num_samples=SAMPLES_PER_SYMBOL, rate=SAMPLE_RATE, amplitude=MAX_AMPLITUDE):
+		"""
+		Processes the frequency passed into the function and gives an array of
+		changing amplitudes with time to describe the wave to be produced
+		"""
 		symbol = []
 		final_index = num_samples + self.prev_index
 		for index in xrange(self.prev_index, final_index):
