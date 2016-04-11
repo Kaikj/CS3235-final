@@ -41,6 +41,7 @@ class ClientHandler:
         client.sendMessage('url:http://www.google.com', False)
 
 class VipHandler:
+    connection = None
     CRASHLock = Lock()
 
     @classmethod
@@ -57,9 +58,8 @@ class VipHandler:
 
     @classmethod
     def unsubscribe(self, vip_connection):
-        if self.connection is not vip_connection:
-            pass
-        self.connection = None
+        if self.connection is vip_connection:
+            self.connection = None
 
     @classmethod
     def CRASHAuth(self):
@@ -67,18 +67,19 @@ class VipHandler:
         self.CRASHLock.acquire()
 
         self.keyPromise = defer.Deferred()
-        '''
-        # generate DHKE
-        # keygen = DH()
+        if self.connection:
+            # generate DHKE
+            keygen = DH()
 
-        # send to VIP
-        self.connection.sendMessage('g=' + keygen.generator, False)
-        self.connection.sendMessage('p=' + keygen.prime, False)
-        self.connection.sendMessage('public=' + keygen.publicKey, False)
-        # wait for g^b mod p
-        '''
-        # Dummy wait, to be replaced with the actual protocol above
-        reactor.callLater(2, self.onAuthSuccess, 0)
+            # send to VIP
+            self.connection.sendMessage('g=' + keygen.generator, False)
+            self.connection.sendMessage('p=' + keygen.prime, False)
+            self.connection.sendMessage('public=' + keygen.publicKey, False)
+            # wait for g^b mod p
+        else:
+            # Dummy wait, to be replaced with the actual protocol above
+            reactor.callLater(2, self.onAuthSuccess, 0)
+
         return self.keyPromise
 
     @classmethod
