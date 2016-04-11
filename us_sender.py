@@ -1,6 +1,7 @@
 import pyaudio
 import math
 import time
+from simple_fec import encode
 from constants import *
 
 class UsSender:
@@ -89,5 +90,7 @@ class UsSender:
 
 if  __name__ == "__main__":
 	sender = UsSender()
-	sender.send(''.join(format(ord(x), 'b') for x in "Hello"))
+	message = ''.join(format(ord(x), 'b') for x in "Hello")
+	message = encode(message)
+	sender.send(message)
 	sender.teardown()

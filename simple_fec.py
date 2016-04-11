@@ -9,11 +9,11 @@ def encode(input):
 	output = ""
 	for x in str(input):
 		output = output + x * K
-	return int(output)
+	return output
 	
 #decode(input): takes in stream of bits, performs error correction by majority rule, returns the initial message
 def decode(input):
-	raw = str(input)
+	raw = input
 	output = ""
 	if (len(raw) % 3) != 0:
 		return -1
@@ -30,4 +30,4 @@ def decode(input):
 			else:
 				output = output + '0'
 		raw = raw[K:]
-	return int(output)
+	return output
