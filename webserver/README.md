@@ -18,16 +18,6 @@ A websocket server and client test for [CRASH][crash] (Confined Room Authenticat
 1. `onmessage` "yourTurn": invoke [CRASH][crash] protocol. Replies "turn_ready"
 2. `onmessage` "url:xxx": `window.open(xxx)`
 
-## Development
-
-### Requirements
-
-- Python 2.7
-
-### Setup
-
-1. `pip install -r requirements.txt`
-
 ### Run
 
 1. `python server.py`
