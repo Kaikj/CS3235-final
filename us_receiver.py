@@ -3,7 +3,6 @@ import math
 import time
 import Queue
 import threading
-#import binascii
 from simple_fec import decode
 from constants import *
 
@@ -171,8 +170,6 @@ if __name__ == "__main__":
 			bits = receiver.get_bits()
 			bits = decode(bits)
 			print bits
-			#message = binascii.b2a_uu(bits)
-			#print message
 	except KeyboardInterrupt:
 		print "Shutting down..."
 		receiver.teardown()
