@@ -3,6 +3,7 @@ import math
 import time
 import Queue
 import threading
+from simple_fec import decode
 from constants import *
 
 class UsReceiver:
@@ -167,6 +168,7 @@ if __name__ == "__main__":
 	try:
 		while True:
 			bits = receiver.get_bits()
+			bits = decode(bits)
 			print bits
 	except KeyboardInterrupt:
 		print "Shutting down..."
