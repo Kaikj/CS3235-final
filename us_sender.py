@@ -45,18 +45,18 @@ class UsSender:
 
 		# Repeat the sending so that the receiver has more chance
 		# of receiving the sound that is sent
-		for i in xrange(3):
+		#for i in xrange(3):
 
 			# Pad the start of the payload with 0s so that the
 			# receiver knows when the payload starts
-			for i in xrange(SIZE_OF_START * BITS_PER_ASCII):
-				self.stream.write(self.pya_format(self.get_symbol(ZERO_FREQUENCY)))
+			#for i in xrange(SIZE_OF_START * BITS_PER_ASCII):
+				#self.stream.write(self.pya_format(self.get_symbol(ZERO_FREQUENCY)))
 
-			for bit in bits:
-				if bit == '1':
-					self.stream.write(self.pya_format(self.get_symbol(ONE_FREQUENCY)))
-				elif bit == '0':
-					self.stream.write(self.pya_format(self.get_symbol(ZERO_FREQUENCY)))
+                for bit in bits:
+                        if bit == '1':
+                                self.stream.write(self.pya_format(self.get_symbol(ONE_FREQUENCY)))
+                        elif bit == '0':
+                                self.stream.write(self.pya_format(self.get_symbol(ZERO_FREQUENCY)))
 
 
 		self.stream.stop_stream()
@@ -92,5 +92,7 @@ if  __name__ == "__main__":
 	sender = UsSender()
 	message = ''.join(format(ord(x), 'b') for x in "Hello")
 	message = encode(message)
+	print message
+	print len(message)
 	sender.send(message)
 	sender.teardown()
