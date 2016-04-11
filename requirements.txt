@@ -2,6 +2,4 @@
 --index-url https://pypi.python.org/simple/
 
 autobahn[twisted]==0.12.1
-
-INSTALLATION GUIDE:
-1) run in PowerShell the following command: python -m pip install pyaudio
+pyaudio==0.2.9
