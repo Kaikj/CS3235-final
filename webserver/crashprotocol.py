@@ -29,12 +29,14 @@ class VipProtocol(WebSocketServerProtocol):
 
     def onMessage(self, payload, isBinary):
         if not isBinary:
+            print("Text message received: {}".format(payload.decode('utf8')))
             str_payload = str(payload)
             try:
                 key = int(str_payload)
                 VipHandler.onAuthSuccess(key)
             except ValueError, e:
-                raise e
+                # raise e
+                pass
 
     def onClose(self, wasClean, code, reason):
         VipHandler.unsubscribe(self)
