@@ -7,22 +7,22 @@ A websocket server and client test for [CRASH][crash] (Confined Room Authenticat
 ### Server
 
 1. `onOpen`: queue the client for authentication. It is managed by Python's `threading.Lock` object
-2. On `Lock` acquire: sends "yourTurn" message to the client
+2. On `Lock` acquire: send `g` (generator) and `p` (prime) to the client
 3. On "turn_ready" message from client:
-    * Sends `generator`, `prime`, and `sharedValue` to the "VIP" in the room to enable the authentication protocol
-3. On receiving back `sharedValue`/`sharedKey` from VIP: send to the client a  url of a page to be opened
-    * Message is in the form "url:xxx"
+    * Send `g` and `p` to the "VIP" in the room to enable the authentication protocol
+3. On receiving back `sharedValue`/`sharedKey` from VIP: do nothing for now
 
 ### Client
 
-1. `onmessage` "yourTurn": invoke [CRASH][crash] protocol. Replies "turn_ready"
-2. `onmessage` "url:xxx": `window.open(xxx)`
+There are 2 versions of client. One is browser-based (here), the other one is just a websocket (in the client/ directory)
+
+1. `onmessage` "g=xxx" and "p=xxx": invoke [CRASH][crash] protocol. Replies "turn_ready"
 
 ### Run
 
-1. `python -m webserver`
+1. `python -m webserver` (from project's root directory)
 2. Open browser, URL: http://localhost:8080/webserver/
     * To simulate multiple client, the URL above can be opened in multiple tabs.
-3. When "yourTurn" message is received (it will be logged), send "turn_ready" message without the quotes
+3. When `g` and `p` values are received (it will be logged), send "turn_ready" message without the quotes
 
 [crash]: https://github.com/Kaikj/CRASH
