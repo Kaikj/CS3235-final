@@ -72,9 +72,9 @@ class VipHandler:
             keygen = DH()
 
             # send to VIP
-            self.connection.sendMessage('g=' + keygen.generator, False)
-            self.connection.sendMessage('p=' + keygen.prime, False)
-            self.connection.sendMessage('public=' + keygen.publicKey, False)
+            self.connection.sendMessage('g=' + str(keygen.generator), False)
+            self.connection.sendMessage('p=' + str(keygen.prime), False)
+            # self.connection.sendMessage('public=' + keygen.publicKey, False)
             # wait for g^b mod p
         else:
             # Dummy wait, to be replaced with the actual protocol above
