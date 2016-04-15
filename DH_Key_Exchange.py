@@ -35,10 +35,10 @@ class DH(object):
 
 	def computePrivateKey(self):
 		random.seed()
-		return random.getrandbits(20)
+		return random.getrandbits(self.keylength)
 
 	def computePublicKey(self):
-		sharedValue = (self.generator ** self.privateKey) % self.prime
+		sharedValue = pow(self.generator, self.privateKey, self.prime)
 		return sharedValue
 
 	def verifyReceivedPublicKey(self, receivedPublicKey):
@@ -59,8 +59,8 @@ class DH(object):
 		else:
 			return 0
 
-a = DH(3, 15, 160)
-b = DH(3, 15, 160)
+a = DH(2, 15, 160)
+b = DH(2, 15, 160)
 
 key_1 = a.computeSymmetricKey(b.publicKey)
 key_2 = b.computeSymmetricKey(a.publicKey)
