@@ -2,26 +2,21 @@ import math
 import random
 
 class DH(object):
-	def __init__(self, generator, RFC_MODP_group_id, keylength):
-		generator_List = [2, 3, 7]
-		if (generator not in generator_List):
-			self.generator = 2
-		else:
-			self.generator = generator
-
-		if (keylength < 160):
-			self.keylength = 160
-		elif (keylength > 540):
-			self.keylength = 540
-		else:
-			self.keylength = keylength
+	def __init__(self):
+		self.generator = self.returnGenerator()
+		self.keylength = self.generateKeylength()	
+		self.prime = self.generatePrime()
 		
-		self.prime = self.generatePrime(RFC_MODP_group_id)
-		self.privateKey = self.computePrivateKey()
-		self.publicKey = self.computePublicKey()
+	def generateKeylength(self):
+		return 160
 
-	def generatePrime(self, RFC_MODP_group_id):
+	def returnGenerator(self):
+		generator_List = [2, 3, 7]		
+		return random.choice(generator_List)
+
+	def generatePrime(self):
 		group_List = [5, 14, 15, 16, 17]
+		RFC_MODP_group_id = random.choice(group_List)
 		if (RFC_MODP_group_id not in group_List):
 			group_id = 17
 		prime_List = {
@@ -33,52 +28,58 @@ class DH(object):
 		}
 		return prime_List[RFC_MODP_group_id]
 
-	def computePrivateKey(self):
+	def computePrivateKey(self, keylength):
 		random.seed()
-		return random.getrandbits(self.keylength)
+		return random.getrandbits(keylength)
 
-	def computePublicKey(self):
-		sharedValue = pow(self.generator, self.privateKey, self.prime)
+	def computePublicKey(self, generator, privateKey, primeNumber):
+		sharedValue = pow(generator, privateKey, primeNumber)
 		return sharedValue
 
-	def verifyReceivedPublicKey(self, receivedPublicKey):
-		a = self.prime - 1
+	def verifyReceivedPublicKey(self, receivedPublicKey, primeNumber):
+		a = primeNumber - 1
 		if (receivedPublicKey > 2 and receivedPublicKey < a):
 			half_a = a // 2
-			legendreSymbol = pow(receivedPublicKey, half_a, self.prime)
+			legendreSymbol = pow(receivedPublicKey, half_a, primeNumber)
 			if (legendreSymbol == 1):
 				return True
 			else:
 				return False
 
-	def computeSymmetricKey(self, receivedPublicKey): 
-		isValid = self.verifyReceivedPublicKey(receivedPublicKey)
+	def computeSymmetricKey(self, receivedPublicKey, privateKey, primeNumber): 
+		isValid = self.verifyReceivedPublicKey(receivedPublicKey, primeNumber)
 		if (isValid):
-			symmetricKey = pow(receivedPublicKey, self.privateKey, self.prime)
+			symmetricKey = pow(receivedPublicKey, privateKey, primeNumber)
 			return symmetricKey
 		else:
 			return 0
 
-a = DH(2, 15, 160)
-b = DH(2, 15, 160)
+a = DH()	# This represents the client
+b = DH()	# This represents the vip 
+c = DH()	# This represents the server -> Client and vip uses its g and p
 
-key_1 = a.computeSymmetricKey(b.publicKey)
-key_2 = b.computeSymmetricKey(a.publicKey)
-if (key_1 == 0 or key_2 == 0):
+aPrivKey = a.computePrivateKey(a.keylength)
+bPrivKey = b.computePrivateKey(b.keylength)
+aPubKey = a.computePublicKey(c.generator, aPrivKey, c.prime)
+bPubKey = b.computePublicKey(c.generator, bPrivKey, c.prime)
+aSymKey = a.computeSymmetricKey(bPubKey, aPrivKey, c.prime)
+bSymKey = b.computeSymmetricKey(aPubKey, bPrivKey, c.prime)
+
+if (aSymKey == 0 or bSymKey == 0):
 	print("Failed: Public key verification")
-elif (key_1 == key_2):
+elif (aSymKey == bSymKey):
 	print("Match")
 else: 
 	print("Failed: Shared keys mismatch")
 
-"""	
+"""
 FOR DEBUGGING
 
 print("a properties: ")
 print("public key: ")
-print(a.publicKey)
+print(aPubKey)
 print("private key: ")
-print(a.privateKey)
+print(aPrivKey)
 print("generator: ")
 print(a.generator)
 print("prime: ")
@@ -88,9 +89,9 @@ print(a.keylength)
 
 print("b properties: ")
 print("public key:: ")
-print(b.publicKey)
+print(bPubKey)
 print("private key: ")
-print(b.privateKey)
+print(bPrivKey)
 print("generator: ")
 print(b.generator)
 print("prime: ")
@@ -98,6 +99,7 @@ print(b.prime)
 print("keylength: ")
 print(b.keylength)
 
-print(key_1)
-print(key_2)
+print(aSymKey)
+print(bSymKey)
+
 """
