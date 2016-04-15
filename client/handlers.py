@@ -1,0 +1,25 @@
+from twisted.internet import reactor, defer, threads
+
+class VipHandler(object):
+    """Module that acts as a layer between UltraSound module and the websocket module"""
+    g = None
+    p = None
+
+    @classmethod
+    def setG(self, g):
+        self.g = g
+
+    @classmethod
+    def setP(self, p):
+        self.p = p
+
+    @classmethod
+    def gotBothPrimes(self):
+        return self.p != None and self.g != None
+
+    @classmethod
+    def us_auth(self, server_connection):
+        # ultrasound auth here
+        self.p = None
+        self.g = None
+        server_connection.sendMessage('5000', False)
