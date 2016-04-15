@@ -1,6 +1,6 @@
 from twisted.internet import reactor, defer, threads
 
-class Handler(object):
+class VipHandler(object):
     """Module that acts as a layer between UltraSound module and the websocket module"""
     g = None
     p = None
