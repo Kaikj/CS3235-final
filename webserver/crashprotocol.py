@@ -7,7 +7,7 @@ class ServerProtocol(WebSocketServerProtocol):
     def onOpen(self):
         print(self.peer)
         # protocol, ip, port = self.peer.split(':')
-        self.sendMessage('Please wait for your turn', False)
+        # self.sendMessage('Please wait for your turn', False)
         ClientHandler.initAuth(self)
 
     def onMessage(self, payload, isBinary):

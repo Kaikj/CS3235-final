@@ -12,6 +12,7 @@ class ClientHandler:
 
     @classmethod
     def initAuth(self, client):
+        client.keygen = DH()
         self.clientQueue.append(client)
         Thread(target=self.waitForTurn).start()
 
@@ -19,14 +20,16 @@ class ClientHandler:
     def waitForTurn(self):
         # block other clients who try to authenticate
         self.CRASHLock.acquire()
-        # tell client its his/her turn
-        self.clientQueue.popleft().sendMessage('yourTurn', False)
+        # send the g and p to client
+        client = self.clientQueue.popleft()
+        client.sendMessage('g=' + str(client.keygen.generator))
+        client.sendMessage('p=' + str(client.keygen.prime))
         # wait to receive back from client
 
     @classmethod
     def startAuth(self, client):
         print('Authenticating...')
-        keyPromise = VipHandler.CRASHAuth()
+        keyPromise = VipHandler.CRASHAuth(client.keygen.generator, client.keygen.prime)
         keyPromise.addCallback(self.gotKey, client=client)
 
     @classmethod
@@ -38,7 +41,7 @@ class ClientHandler:
         self.CRASHLock.release()
         # TODO: handle exceptional case
         print('Authentication successful')
-        client.sendMessage('url:http://www.google.com', False)
+        # client.sendMessage('url:http://www.google.com', False)
 
 class VipHandler:
     connection = None
@@ -62,18 +65,15 @@ class VipHandler:
             self.connection = None
 
     @classmethod
-    def CRASHAuth(self):
+    def CRASHAuth(self, g, p):
         # ensure we only authenticate one at a time
         self.CRASHLock.acquire()
 
         self.keyPromise = defer.Deferred()
         if self.connection:
-            # generate DHKE
-            keygen = DH()
-
             # send to VIP
-            self.connection.sendMessage('g=' + str(keygen.generator), False)
-            self.connection.sendMessage('p=' + str(keygen.prime), False)
+            self.connection.sendMessage('g=' + str(g), False)
+            self.connection.sendMessage('p=' + str(p), False)
             # self.connection.sendMessage('public=' + keygen.publicKey, False)
             # wait for g^b mod p
         else:
