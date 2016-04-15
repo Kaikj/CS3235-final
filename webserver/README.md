@@ -20,8 +20,8 @@ A websocket server and client test for [CRASH][crash] (Confined Room Authenticat
 
 ### Run
 
-1. `python server.py`
-2. Open browser, URL: http://localhost:8080
+1. `python -m webserver`
+2. Open browser, URL: http://localhost:8080/webserver/
     * To simulate multiple client, the URL above can be opened in multiple tabs.
 3. When "yourTurn" message is received (it will be logged), send "turn_ready" message without the quotes
 
