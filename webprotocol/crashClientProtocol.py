@@ -1,8 +1,7 @@
 from autobahn.twisted.websocket import WebSocketClientProtocol
 
 class clientToServerProtocol(WebSocketClientProtocol):
-	def onOpen(self):
-		
+	def dataReceived(self, )
 
 class vipToServerProtocol(WebSocketClientProtocol):
 	def onOpen(self):

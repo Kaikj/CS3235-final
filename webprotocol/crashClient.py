@@ -24,5 +24,4 @@ if __name__ == '__main__':
     factory.protocol = clientToServerProtocol
 
     reactor.connectTCP("127.0.0.1", 8080, factory)
-    reactor.listenTCP(8080, factory)
     reactor.run()

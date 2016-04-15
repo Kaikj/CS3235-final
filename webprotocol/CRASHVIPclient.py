@@ -24,5 +24,4 @@ if __name__ == '__main__':
     factory.protocol = vipToServerProtocol
 
     reactor.connectTCP("127.0.0.1", 9000, factory)
-    reactor.listenTCP(9000, factory)
     reactor.run()
