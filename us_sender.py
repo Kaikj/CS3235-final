@@ -88,11 +88,17 @@ class UsSender:
 		y = amplitude * math.sin(2 * math.pi * frequency * time)
 		return chr(int(y + TRANSFORMATION))
 
-if  __name__ == "__main__":
-	sender = UsSender()
-	message = ''.join(format(ord(x), 'b') for x in "Hello")
-	message = encode(message)
-	print message
-	print len(message)
-	sender.send(message)
-	sender.teardown()
+        #if  __name__ == "__main__":
+	def run(msg):
+                #sender = UsSender()
+                out = ''
+                for x in msg:
+                    current = format(int(x), 'b')
+                    current = '%(#)04d' % \
+                    {"#": int(current)}
+                    out = out + current
+                message = encode(out)
+                print message
+                print len(message)
+                sender.send(message)
+                sender.teardown()

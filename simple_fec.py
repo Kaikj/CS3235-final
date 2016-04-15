@@ -15,19 +15,22 @@ def encode(input):
 def decode(input):
 	raw = input
 	output = ""
-	#if (len(raw) % 3) != 0:
-	#	return -1
-	while len(raw) >= K:
+	if (len(raw) % 3) == 1:
+		return -1
+	while len(raw) >= 1:
 		current = raw[0:K]
 		if current == "111":
 			output = output + '1'
+			raw = raw[K:]
 		elif current == "000":
 			output = output + '0'
+			raw = raw[K:]
 		else:
-			check = current.count("1", 0)
+			check = current.count('1', 0)
 			if check == 2:
 				output = output + '1'
+				raw = raw[K:]
 			else:
 				output = output + '0'
-		raw = raw[K:]
+				raw = raw[K:]
 	return output
