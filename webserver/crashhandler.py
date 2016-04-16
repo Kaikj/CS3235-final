@@ -29,17 +29,21 @@ class ClientHandler:
     @classmethod
     def startAuth(self, client):
         print('Authenticating...')
-        keyPromise = VipHandler.CRASHAuth(client.keygen.generator, client.keygen.prime)
-        keyPromise.addCallback(self.gotKey, client=client)
+        a = client.keygen.computePrivateKey(client.keygen.keylength)
+        key = client.keygen.computePublicKey(client.keygen.generator, client.keygen.prime, a)
+        keyPromise = VipHandler.CRASHAuth(key)
+        keyPromise.addCallback(self.gotKey, client=client, privateKey = a)
 
     @classmethod
-    def gotKey(self, result, client):
+    def gotKey(self, result, client, privateKey):
         '''
-        result is the key
+        result is the other public key
         '''
         # release lock to allow other client to authenticate
         self.CRASHLock.release()
         # TODO: handle exceptional case
+        symKey = client.keygen.computeSymmetricKey(key, privateKey, client.keygen.prime)
+        print(symKey)
         print('Authentication successful')
         # client.sendMessage('url:http://www.google.com', False)
 
@@ -65,16 +69,14 @@ class VipHandler:
             self.connection = None
 
     @classmethod
-    def CRASHAuth(self, g, p):
+    def CRASHAuth(self, publicKey):
         # ensure we only authenticate one at a time
         self.CRASHLock.acquire()
 
         self.keyPromise = defer.Deferred()
         if self.connection is not None:
             # send to VIP
-            self.connection.sendMessage('g=' + str(g), False)
-            self.connection.sendMessage('p=' + str(p), False)
-            # self.connection.sendMessage('public=' + keygen.publicKey, False)
+            self.connection.sendMessage('key=' + str(publicKey), False)
             # wait for g^b mod p
         else:
             # Dummy wait, to be replaced with the actual protocol above
