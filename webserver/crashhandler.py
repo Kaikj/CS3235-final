@@ -30,8 +30,8 @@ class ClientHandler:
     def startAuth(self, client):
         print('Authenticating...')
         a = client.keygen.computePrivateKey(client.keygen.keylength)
-        key = client.keygen.computePublicKey(client.keygen.generator, client.keygen.prime, a)
-        keyPromise = VipHandler.CRASHAuth(key)
+        publicKey = client.keygen.computePublicKey(client.keygen.generator, a, client.keygen.prime)
+        keyPromise = VipHandler.CRASHAuth(publicKey)
         keyPromise.addCallback(self.gotKey, client=client, privateKey = a)
 
     @classmethod
@@ -42,7 +42,7 @@ class ClientHandler:
         # release lock to allow other client to authenticate
         self.CRASHLock.release()
         # TODO: handle exceptional case
-        symKey = client.keygen.computeSymmetricKey(key, privateKey, client.keygen.prime)
+        symKey = client.keygen.computeSymmetricKey(result, privateKey, client.keygen.prime)
         print(symKey)
         print('Authentication successful')
         # client.sendMessage('url:http://www.google.com', False)
