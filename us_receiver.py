@@ -80,7 +80,7 @@ class UsReceiver:
 				time.sleep(1)
 			else:
 				attempt = 0
-				bits.append(self.bit_queue.get())
+				bits.append(str(self.bit_queue.get()))
 
 			if attempt > 3:
 				break
@@ -174,7 +174,7 @@ class UsReceiver:
                                 print(len(current))
                                 if len(current) > 0 and len(current) < 1024:
                                         control = 0
-                        bits = decode(bits)
+                        bits = decode(str(bits))
                         output = ''
                         while len(bits) > 0:
                                 current = bits[0:4]
