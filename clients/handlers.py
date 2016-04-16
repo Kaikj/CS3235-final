@@ -4,7 +4,26 @@ import us_sender
 from DH_Key_Exchange import DH
 from twisted.internet import reactor, defer, threads
 
-class _Handler:
+class VipHandler:
+    """
+    Module that acts as a layer between UltraSound module and the websocket module
+    on the VIP side
+
+    """
+
+    @classmethod
+    def us_auth(self, server_connection, key):
+        #initialise and run sender
+        sender = us_sender.UsSender()
+        sender.run(str(key))
+        #initialise and run receiver after sending
+        receiver = us_receiver.UsReceiver()
+        clientPubKey = receiver.run()
+        server_connection.sendMessage(str(clientPubKey), False)
+
+
+class ClientHandler:
+    """Module that acts as a layer between UltraSound module and the websocket module"""
     g = None
     p = None
     privateKey = None
@@ -20,37 +39,6 @@ class _Handler:
     @classmethod
     def gotBothPrimes(self):
         return self.p != None and self.g != None
-
-    @classmethod
-    @abc.abstractmethod
-    def us_auth(self, server_connection):
-        return
-
-
-class VipHandler(_Handler):
-    """Module that acts as a layer between UltraSound module and the websocket module"""
-
-    @classmethod
-    def us_auth(self, server_connection):
-        # ultrasound auth here
-        # based on DH_Key_Exchange.py examples
-        vipDH = DH()
-        vipPrivKey = vipDH.computePrivateKey(vipDH.keylength)
-        vipPubKey = vipDH.computePublicKey(self.g, vipPrivKey, self.p)
-        #initialise and run sender
-        sender = us_sender.UsSender()
-        sender.run(str(vipPubKey))
-        #initialise and run receiver after sending
-        receiver = us_receiver.UsReceiver()
-        clientPubKey = receiver.run()
-        vipSymKey = vipDH.computeSymmetricKey(vipPrivKey, vipPubKey, self.p)
-        self.p = None
-        self.g = None
-        server_connection.sendMessage(str(vipSymKey), False)
-
-
-class ClientHandler(_Handler):
-    """Module that acts as a layer between UltraSound module and the websocket module"""
 
     @classmethod
     def us_auth(self, server_connection):

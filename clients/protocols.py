@@ -12,12 +12,8 @@ class VipClientProtocol(WebSocketClientProtocol):
         if not isBinary:
             print("Text message received: {0}".format(payload.decode('utf8')))
             key, value = str(payload).split('=')
-            if key == 'g':
-                VipHandler.setG(value)
-            elif key == 'p':
-                VipHandler.setP(value)
-            if VipHandler.gotBothPrimes():
-                VipHandler.us_auth(self)
+            if key == 'key':
+                VipHandler.us_auth(self, value)
 
     def onClose(self, wasClean, code, reason):
         print("WebSocket connection closed: {0}".format(reason))
