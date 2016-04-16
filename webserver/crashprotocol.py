@@ -1,5 +1,3 @@
-import threading
-
 from autobahn.twisted.websocket import WebSocketServerProtocol
 from crashhandler import ClientHandler, VipHandler
 
@@ -12,7 +10,9 @@ class ServerProtocol(WebSocketServerProtocol):
 
     def onMessage(self, payload, isBinary):
         # self.sendMessage(payload, isBinary)
+        print("Text message received: {}".format(payload.decode('utf8')))
         if str(payload) == 'turn_ready':
+            print("Client ready. Start authenticating.")
             ClientHandler.startAuth(self)
 
     def onClose(self, wasClean, code, reason):
@@ -25,6 +25,7 @@ class VipProtocol(WebSocketServerProtocol):
         print(self.peer)
         success = VipHandler.subscribe(self)
         if not success:
+            print("no success???")
             self.dropConnection()
 
     def onMessage(self, payload, isBinary):

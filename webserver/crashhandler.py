@@ -70,7 +70,7 @@ class VipHandler:
         self.CRASHLock.acquire()
 
         self.keyPromise = defer.Deferred()
-        if self.connection:
+        if self.connection is not None:
             # send to VIP
             self.connection.sendMessage('g=' + str(g), False)
             self.connection.sendMessage('p=' + str(p), False)
