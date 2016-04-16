@@ -1,7 +1,7 @@
 import abc
 import us_receiver
 import us_sender
-import DH_Key_Exchange
+from DH_Key_Exchange import DH
 from twisted.internet import reactor, defer, threads
 
 class _Handler:
@@ -11,11 +11,11 @@ class _Handler:
 
     @classmethod
     def setG(self, g):
-        self.g = g
+        self.g = long(g)
 
     @classmethod
     def setP(self, p):
-        self.p = p
+        self.p = long(p)
 
     @classmethod
     def gotBothPrimes(self):
@@ -25,6 +25,7 @@ class _Handler:
     @abc.abstractmethod
     def us_auth(self, server_connection):
         return
+
 
 class VipHandler(_Handler):
     """Module that acts as a layer between UltraSound module and the websocket module"""
@@ -37,15 +38,16 @@ class VipHandler(_Handler):
         vipPrivKey = vipDH.computePrivateKey(vipDH.keylength)
         vipPubKey = vipDH.computePublicKey(self.g, vipPrivKey, self.p)
         #initialise and run sender
-        sender = UsSender()
-        sender.run(vipPubKey)
+        sender = us_sender.UsSender()
+        sender.run(str(vipPubKey))
         #initialise and run receiver after sending
-        receiver = UsReceiver()
+        receiver = us_receiver.UsReceiver()
         clientPubKey = receiver.run()
-        vipSymKey = vipDH.computeSymmetricKey(vipPrivKey, vipPubKey, p)
+        vipSymKey = vipDH.computeSymmetricKey(vipPrivKey, vipPubKey, self.p)
         self.p = None
         self.g = None
-        server_connection.sendMessage(vipSymKey, False) # replace '5000' with the shared key
+        server_connection.sendMessage(str(vipSymKey), False)
+
 
 class ClientHandler(_Handler):
     """Module that acts as a layer between UltraSound module and the websocket module"""
@@ -54,16 +56,16 @@ class ClientHandler(_Handler):
     def us_auth(self, server_connection):
         # ultrasound auth here
         #initialise and run receiver
-        receiver = UsReceiver()
+        receiver = us_receiver.UsReceiver()
         vipPubKey = receiver.run()
         # based on DH_Key_Exchange.py examples
         clientDH = DH()
         clientPrivKey = clientDH.computePrivateKey(clientDH.keylength)
         clientPubKey = clientDH.computePublicKey(self.g, clientPrivKey, self.p)
         #initialise and run sender
-        sender = UsSender()
-        sender.run(clientPubKey)
-        clientSymKey = clientDH.computeSymmetricKey(clientPrivKey, clientPubKey, p)
+        sender = us_sender.UsSender()
+        sender.run(str(clientPubKey))
+        clientSymKey = clientDH.computeSymmetricKey(clientPrivKey, clientPubKey, self.p)
         self.p = None
         self.g = None
         # haven't decided what to do after the key exchange
