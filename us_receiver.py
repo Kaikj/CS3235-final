@@ -163,21 +163,20 @@ class UsReceiver:
 			# Sleep until the input arrives
 			time.sleep(1)
 
-        def run():
-                #receiver = UsReceiver()
-                try:
-                        while True:
-                                bits = receiver.get_bits()
-                                bits = decode(bits)
-                                output = ''
-                                while len(bits) > 0:
-                                        current = bits[0:4]
-                                        current = int(current, 2)
-                                        output = output + str(current)
-                                        bits = bits[4:]
-                                return output
-                except KeyboardInterrupt:
-                        print "Shutting down..."
-                        receiver.teardown()
+        def run(self):
+            try:
+                while True:
+                    bits = self.get_bits()
+                    bits = decode(bits)
+                    output = ''
+                    while len(bits) > 0:
+                        current = bits[0:4]
+                        current = int(current, 2)
+                        output = output + str(current)
+                        bits = bits[4:]
+                    return output
+            except KeyboardInterrupt:
+                print "Shutting down..."
+                self.teardown()
 
 
