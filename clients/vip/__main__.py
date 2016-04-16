@@ -4,7 +4,7 @@ from twisted.python import log
 from twisted.internet import reactor
 from autobahn.twisted.websocket import WebSocketClientFactory
 
-from protocols import VipClientProtocol
+from clients.protocols import VipClientProtocol
 
 if __name__ == '__main__':
     log.startLogging(sys.stdout)

@@ -1,7 +1,7 @@
 import abc
-from ... import us_receiver
-from ... import us_sender
-from ... import DH_Key_Exchange
+import us_receiver
+import us_sender
+import DH_Key_Exchange
 from twisted.internet import reactor, defer, threads
 
 class _Handler:
