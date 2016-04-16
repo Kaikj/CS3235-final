@@ -11,7 +11,7 @@
 ### Run
 
 1. Run webserver first (refer to webserver README)
-2. `python vip.py`
+2. `python -m clients.vip` from root directory
 
 ## Normal Clients
 
@@ -25,4 +25,4 @@
 
 1. Run webserver (refer to webserver README)
 2. Run VIP (above)
-3. `python client.py`
+3. `python -m clients.client` from root directory
