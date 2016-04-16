@@ -156,7 +156,7 @@ class UsReceiver:
 				# just background sound
 				if (on_freq_pow > THRESHOLD) or (off_freq_pow > THRESHOLD):
 					if on_freq_pow > off_freq_pow:
-						self.bit_queue.put(1)
+                                                self.bit_queue.put(1)
 					else:
 						self.bit_queue.put(0)
 
@@ -166,15 +166,22 @@ class UsReceiver:
         def run(self):
             try:
                 while True:
-                    bits = self.get_bits()
-                    bits = decode(bits)
-                    output = ''
-                    while len(bits) > 0:
-                        current = bits[0:4]
-                        current = int(current, 2)
-                        output = output + str(current)
-                        bits = bits[4:]
-                    return output
+                        bits = ''
+                        control = 1
+                        while control != 0:
+                                current = self.get_bits()
+                                bits = bits + ''.join(current)
+                                print(len(current))
+                                if len(current) > 0 and len(current) < 1024:
+                                        control = 0
+                        bits = decode(bits)
+                        output = ''
+                        while len(bits) > 0:
+                                current = bits[0:4]
+                                current = int(current, 2)
+                                output = output + str(current)
+                                bits = bits[4:]
+                        return output
             except KeyboardInterrupt:
                 print "Shutting down..."
                 self.teardown()
