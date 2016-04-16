@@ -170,9 +170,10 @@ class UsReceiver:
                         control = 1
                         while control != 0:
                                 current = self.get_bits()
-                                bits = bits + current
-                                if length(current) < 1024:
-                                        control == 0
+                                bits = bits + ''.join(current)
+                                print(len(current))
+                                if len(current) > 0 and len(current) < 1024:
+                                        control = 0
                         bits = decode(bits)
                         output = ''
                         while len(bits) > 0:
