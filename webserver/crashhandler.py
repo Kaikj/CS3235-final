@@ -43,8 +43,8 @@ class ClientHandler:
         # release lock to allow other client to authenticate
         self.CRASHLock.release()
         # TODO: handle exceptional case
-        print('g^b mod p received from VIP: %s'.format(result))
-        print('g^ab mod p: %s'.format(str(pow(long(result), privateKey, keygen.prime))))
+        print('g^b mod p received from VIP: {}'.format(result))
+        print('g^ab mod p: {}'.format(str(pow(long(result), privateKey, keygen.prime))))
         symKey = client.keygen.computeSymmetricKey(result, privateKey, client.keygen.prime)
         print(symKey)
         print('Authentication successful')
