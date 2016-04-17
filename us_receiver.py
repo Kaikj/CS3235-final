@@ -174,6 +174,7 @@ class UsReceiver:
                                 print(len(current))
                                 if len(current) > 0 and len(current) < 1024:
                                         control = 0
+                        print bits
                         bits = str(decode(str(bits)))
                         output = ''
                         while len(str(bits)) > 0:
