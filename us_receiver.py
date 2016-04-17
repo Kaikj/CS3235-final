@@ -176,7 +176,7 @@ class UsReceiver:
                                         control = 0
                         bits = decode(str(bits))
                         output = ''
-                        while len(bits) > 0:
+                        while len(str(bits)) > 0:
                                 current = bits[0:4]
                                 current = int(current, 2)
                                 output = output + str(current)
