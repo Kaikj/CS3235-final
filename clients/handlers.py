@@ -55,7 +55,7 @@ class ClientHandler:
         #initialise and run sender
         sender = us_sender.UsSender()
         sender.run(str(clientPubKey))
-        print('g^ab mod p: {}'.format(pow(vipPubKey, clientPrivKey, self.p)))
+        print('g^ab mod p: {}'.format(pow(long(vipPubKey), clientPrivKey, self.p)))
         clientSymKey = clientDH.computeSymmetricKey(vipPubKey, clientPrivKey, self.p)
         self.p = None
         self.g = None
