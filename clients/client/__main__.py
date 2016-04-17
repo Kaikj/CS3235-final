@@ -9,7 +9,12 @@ from clients.protocols import ClientProtocol
 if __name__ == '__main__':
     log.startLogging(sys.stdout)
 
-    factory = WebSocketClientFactory(u"ws://127.0.0.1:8080/ws", debug=False)
+    coordinator = '127.0.0.1'
+    if len(sys.argv) > 1:
+        coordinator = sys.argv[1]
+    
+
+    factory = WebSocketClientFactory(u"ws://{}:8080/ws".format(coordinator), debug=False)
     factory.protocol = ClientProtocol
 
     reactor.connectTCP("127.0.0.1", 8080, factory)

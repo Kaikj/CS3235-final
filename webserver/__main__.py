@@ -15,7 +15,7 @@ if __name__ == '__main__':
     log.startLogging(sys.stdout)
 
     ''' Factory for normal clients '''
-    factory = WebSocketServerFactory(u"ws://127.0.0.1:8080")
+    factory = WebSocketServerFactory(u"ws://localhost:8080")
     factory.protocol = ServerProtocol
 
     resource = WebSocketResource(factory)
@@ -31,7 +31,7 @@ if __name__ == '__main__':
     reactor.listenTCP(8080, site)
 
     ''' Factory for VIP '''
-    vipfactory = WebSocketServerFactory(u'ws://127.0.0.1:9000')
+    vipfactory = WebSocketServerFactory(u'ws://localhost:9000')
     vipfactory.protocol = VipProtocol
     reactor.listenTCP(9000, vipfactory)
 
