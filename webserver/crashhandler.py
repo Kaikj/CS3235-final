@@ -31,6 +31,7 @@ class ClientHandler:
         print('Authenticating...')
         a = client.keygen.computePrivateKey(client.keygen.keylength)
         publicKey = client.keygen.computePublicKey(client.keygen.generator, a, client.keygen.prime)
+        print('g^a mod p: {}'.format(publicKey))
         keyPromise = VipHandler.CRASHAuth(publicKey)
         keyPromise.addCallback(self.gotKey, client=client, privateKey = a)
 
@@ -42,6 +43,8 @@ class ClientHandler:
         # release lock to allow other client to authenticate
         self.CRASHLock.release()
         # TODO: handle exceptional case
+        print('g^b mod p received from VIP: %s'.format(result))
+        print('g^ab mod p: %s'.format(str(pow(result, privateKey, keygen.prime))))
         symKey = client.keygen.computeSymmetricKey(result, privateKey, client.keygen.prime)
         print(symKey)
         print('Authentication successful')

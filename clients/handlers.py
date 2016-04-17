@@ -46,14 +46,17 @@ class ClientHandler:
         #initialise and run receiver
         receiver = us_receiver.UsReceiver()
         vipPubKey = receiver.run()
+        print('g^a mod p received: {}'.format(vipPubKey))
         # based on DH_Key_Exchange.py examples
         clientDH = DH()
         clientPrivKey = clientDH.computePrivateKey(clientDH.keylength)
         clientPubKey = clientDH.computePublicKey(self.g, clientPrivKey, self.p)
+        print('g^b mod p generated: {}'.format(clientPubKey))
         #initialise and run sender
         sender = us_sender.UsSender()
         sender.run(str(clientPubKey))
-        clientSymKey = clientDH.computeSymmetricKey(clientPrivKey, clientPubKey, self.p)
+        print('g^ab mod p: {}'.format(pow(vipPubKey, clientPrivKey, self.p)))
+        clientSymKey = clientDH.computeSymmetricKey(vipPubKey, clientPrivKey, self.p)
         self.p = None
         self.g = None
         # haven't decided what to do after the key exchange
