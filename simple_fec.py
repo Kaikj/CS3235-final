@@ -15,8 +15,8 @@ def encode(input):
 def decode(input):
 	raw = input
 	output = ""
-	if (len(raw) % 3) == 1:
-		return -1
+	#if (len(raw) % 3) == 1:
+	#	return -1
 	while len(raw) >= 1:
 		current = raw[0:K]
 		if current == "111":
