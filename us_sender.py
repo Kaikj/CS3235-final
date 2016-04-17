@@ -99,3 +99,19 @@ class UsSender:
         print len(message)
         self.send(message)
         self.teardown()
+
+import sys
+
+if __name__ == '__main__':
+    try:
+        sender = UsSender()
+        msg = '1234567890'
+        if len(sys.argv) > 1:
+            msg = sys.argv[1]
+        print('sending {}'.format(msg))
+        sender.run(msg)
+    except KeyboardInterrupt:
+        pass
+    finally:
+        print('Shutting down.')
+        sender.teardown()

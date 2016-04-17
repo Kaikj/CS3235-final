@@ -186,4 +186,7 @@ class UsReceiver:
                 print "Shutting down..."
                 self.teardown()
 
-
+if __name__ == '__main__':
+	rcv = UsReceiver()
+	print('Listening...')
+	print('Received: {}'.format(str(rcv.run())))
