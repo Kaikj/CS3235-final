@@ -16,5 +16,5 @@ if __name__ == '__main__':
     factory = WebSocketClientFactory(u"ws://{}:9000".format(coordinator), debug=False)
     factory.protocol = VipClientProtocol
 
-    reactor.connectTCP("127.0.0.1", 9000, factory)
+    reactor.connectTCP(coordinator, 9000, factory)
     reactor.run()

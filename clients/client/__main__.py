@@ -13,9 +13,8 @@ if __name__ == '__main__':
     if len(sys.argv) > 1:
         coordinator = sys.argv[1]
     
-
     factory = WebSocketClientFactory(u"ws://{}:8080/ws".format(coordinator), debug=False)
     factory.protocol = ClientProtocol
 
-    reactor.connectTCP("127.0.0.1", 8080, factory)
+    reactor.connectTCP(coordinator, 8080, factory)
     reactor.run()
